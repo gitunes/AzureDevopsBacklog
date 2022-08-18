@@ -1,8 +1,6 @@
 # AzureDevopsBacklog
 Listing work items in Azure Devops's Backlog
 
-# PlanningDemoProject
-
 ## Context
 Retrieves the work items in the backlog with wsql query statements.\
 Brings the details by work item id
