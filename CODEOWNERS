@@ -1,0 +1,5 @@
+# Default reviewers/codeowners for all code changes
+* @cihatsolak @serkansencan @dev-Mjollnir
+
+# Reviewer by email for html files
+*.html cihatsolak@hotmail.com
