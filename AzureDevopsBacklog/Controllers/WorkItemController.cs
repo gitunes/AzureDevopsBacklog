@@ -61,6 +61,7 @@ namespace AzureDevopsBacklog.Controllers
                 var workItemDetailResponse = await _restService.GetApiResponseAsync<WorkItemDetailResponseModel>("GetWorkItemDetail", detailUrl, HelperMethods.GetAuthorizationHeaderCollection(_azureApiSettings.Username, _azureApiSettings.Password));
                 if (workItemDetailResponse.IsSucceeded)
                     return Ok(workItemDetailResponse);
+                return NotFound(workItemDetailResponse);
             }
             return NotFound(response);
         }
