@@ -24,7 +24,7 @@ namespace AzureDevopsBacklog.Controllers
         [Route("details")]
         public async Task<IActionResult> GetWorkItemDetail(int id)
         {
-            var routeUrl = RemoteUrl.GetWorkItemDetail(_azureApiSettings.BaseUrl, id);
+            var routeUrl = RemoteUrls.GetWorkItemDetailSingle(_azureApiSettings.BaseUrl, id);
 
             var response = await _restService.GetApiResponseAsync<WorkItemDetailResponseModel>("GetWorkItemDetail", routeUrl, HelperMethods.GetAuthorizationHeaderCollection(_azureApiSettings.Username, _azureApiSettings.Password));
 
@@ -37,12 +37,31 @@ namespace AzureDevopsBacklog.Controllers
         [Route("workItems")]
         public async Task<IActionResult> GetWorkItemDetail(GetWorkItemDetailRequestModel request)
         {
-            var routeUrl = RemoteUrl.GetWorkItemList(_azureApiSettings.BaseUrl);
+            var routeUrl = RemoteUrls.GetWorkItemList(_azureApiSettings.BaseUrl);
 
             var response = await _restService.PostApiResponseAsync<WorkItemListModel>("GetWorkItemList", routeUrl, request, HelperMethods.GetAuthorizationHeaderCollection(_azureApiSettings.Username, _azureApiSettings.Password));
 
             if (response.IsSucceeded)
                 return Ok(response);
+            return NotFound(response);
+        }
+
+        [HttpPost]
+        [Route("workItems/filter")]
+        public async Task<IActionResult> GetWorkItemDetailsByFilter(GetWorkItemDetailByFilterRequestModel request)
+        {
+            var routeUrl = RemoteUrls.GetWorkItemList(_azureApiSettings.BaseUrl);
+            var filteredQuery = FilterMethods.GetFilteredQuery(request);
+            var requestModel = new GetWorkItemDetailRequestModel { Query = filteredQuery };
+            var response = await _restService.PostApiResponseAsync<WorkItemListModel>("GetWorkItemList", routeUrl, requestModel, HelperMethods.GetAuthorizationHeaderCollection(_azureApiSettings.Username, _azureApiSettings.Password));
+
+            if (response.IsSucceeded)
+            {
+                var detailUrl = RemoteUrls.GetWorkItemDetailList(_azureApiSettings.BaseUrl, response.Data.WorkItems.Select(x => x.Id).ToList());
+                var workItemDetailResponse = await _restService.GetApiResponseAsync<WorkItemDetailResponseModel>("GetWorkItemDetail", detailUrl, HelperMethods.GetAuthorizationHeaderCollection(_azureApiSettings.Username, _azureApiSettings.Password));
+                if (workItemDetailResponse.IsSucceeded)
+                    return Ok(workItemDetailResponse);
+            }
             return NotFound(response);
         }
     }

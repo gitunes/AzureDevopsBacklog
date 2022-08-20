@@ -13,8 +13,10 @@ namespace AzureDevopsBacklog.Application.Methods
 
         public static NameValueCollection GetHeaderCollection(string key, string token, string prefix)
         {
-            NameValueCollection nameValueCollection = new();
-            nameValueCollection.Add(key, $"{(!string.IsNullOrEmpty(prefix) ? $"{prefix} " : string.Empty )}{token}");
+            NameValueCollection nameValueCollection = new()
+            {
+                { key, $"{(!string.IsNullOrEmpty(prefix) ? $"{prefix} " : string.Empty)}{token}" }
+            };
             return nameValueCollection;
         }
 
