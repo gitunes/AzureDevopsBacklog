@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace AzureDevopsBacklog.Extensions
 {
-    public static class ServiceRegistrations
+    public static class ServiceRegistrationExtensions
     {
         public static void RegisterServices(this IServiceCollection services)
         {
