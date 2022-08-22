@@ -2,8 +2,11 @@
 
 namespace AzureDevopsBacklog.Application.Models
 {
-    public class WorkItemModel : BaseModel
+    public class WorkItemModel
     {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
         [JsonProperty("url")]
         public string Url { get; set; }
     }
