@@ -1,5 +1,6 @@
 ﻿using AzureDevopsBacklog.Application.Models;
 using AzureDevopsBacklog.Application.Models.ResponseModels;
+using AzureDevopsBacklog.Contants;
 
 namespace AzureDevopsBacklog.Application.Methods
 {
@@ -16,7 +17,11 @@ namespace AzureDevopsBacklog.Application.Methods
             {
                 userSprintDetail.Holds.Add(workItemDetail);
             }
-            else if (workItemDetail.State == "Committed" || workItemDetail.State == "New" || workItemDetail.State == "Development")
+            else if(workItemDetail.State == WorkItemStates.Cancelled)
+            {
+                userSprintDetail.Cancelled.Add(workItemDetail);
+            }
+            else if (!IsWorkItemDone(workItemDetail.State))
             {
                 userSprintDetail.NotFinished.Add(workItemDetail);
             }
@@ -63,6 +68,35 @@ namespace AzureDevopsBacklog.Application.Methods
             }
             );
             return responseModel;
+        }
+
+        public bool IsWorkItemDone(string state)
+        {
+            switch (state)
+            {
+                case WorkItemStates.New:
+                    return false;
+                case WorkItemStates.Committed:
+                    return false;
+                case WorkItemStates.Development:
+                    return true;
+                case WorkItemStates.Test:
+                    return true;
+                case WorkItemStates.Uat:
+                    return true;
+                case WorkItemStates.ReadyForDeployment:
+                    return true;
+                case WorkItemStates.Deployment:
+                    return true;
+                case WorkItemStates.Closed:
+                    return true;
+                case WorkItemStates.Cancelled:
+                    return false;
+                case WorkItemStates.Archive:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }
