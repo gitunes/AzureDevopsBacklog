@@ -1,4 +1,5 @@
-﻿using AzureDevopsBacklog.Application.Models.ResponseModels;
+﻿using AzureDevopsBacklog.Application.Models;
+using AzureDevopsBacklog.Application.Models.ResponseModels;
 
 namespace AzureDevopsBacklog.Application.Methods
 {
