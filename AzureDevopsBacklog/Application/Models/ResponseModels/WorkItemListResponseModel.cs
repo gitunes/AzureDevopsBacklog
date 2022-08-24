@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace AzureDevopsBacklog.Application.Models
+namespace AzureDevopsBacklog.Application.Models.ResponseModels
 {
-    public class WorkItemListModel
+    public class WorkItemListResponseModel
     {
         [JsonProperty("queryType")]
         public string QueryType { get; set; }

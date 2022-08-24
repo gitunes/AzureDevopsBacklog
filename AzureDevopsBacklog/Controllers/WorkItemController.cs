@@ -1,6 +1,6 @@
 ﻿using AzureDevopsBacklog.Application.Methods;
-using AzureDevopsBacklog.Application.Models;
 using AzureDevopsBacklog.Application.Models.RequestModels;
+using AzureDevopsBacklog.Application.Models.ResponseModels;
 using AzureDevopsBacklog.Contants;
 using AzureDevopsBacklog.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +39,7 @@ namespace AzureDevopsBacklog.Controllers
         {
             var routeUrl = RemoteUrls.GetWorkItemList(_azureApiSettings.BaseUrl);
 
-            var response = await _restService.PostApiResponseAsync<WorkItemListModel>("GetWorkItemList", routeUrl, request, HelperMethods.GetAuthorizationHeaderCollection(_azureApiSettings.Username, _azureApiSettings.Password));
+            var response = await _restService.PostApiResponseAsync<WorkItemListResponseModel>("GetWorkItemList", routeUrl, request, HelperMethods.GetAuthorizationHeaderCollection(_azureApiSettings.Username, _azureApiSettings.Password));
 
             if (response.IsSucceeded)
                 return Ok(response);
@@ -53,7 +53,7 @@ namespace AzureDevopsBacklog.Controllers
             var routeUrl = RemoteUrls.GetWorkItemList(_azureApiSettings.BaseUrl);
             var filteredQuery = FilterMethods.GetFilteredQuery(request);
             var requestModel = new GetWorkItemDetailRequestModel { Query = filteredQuery };
-            var response = await _restService.PostApiResponseAsync<WorkItemListModel>("GetWorkItemList", routeUrl, requestModel, HelperMethods.GetAuthorizationHeaderCollection(_azureApiSettings.Username, _azureApiSettings.Password));
+            var response = await _restService.PostApiResponseAsync<WorkItemListResponseModel>("GetWorkItemList", routeUrl, requestModel, HelperMethods.GetAuthorizationHeaderCollection(_azureApiSettings.Username, _azureApiSettings.Password));
 
             if (response.IsSucceeded)
             {
