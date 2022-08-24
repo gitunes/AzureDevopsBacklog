@@ -2,6 +2,7 @@
 using AzureDevopsBacklog.Application.Models.RequestModels;
 using AzureDevopsBacklog.Application.Models.ResponseModels;
 using AzureDevopsBacklog.Contants;
+using AzureDevopsBacklog.Contants.Enums;
 using AzureDevopsBacklog.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,12 +41,16 @@ namespace AzureDevopsBacklog.Controllers
                     var detailUrl = RemoteUrls.GetWorkItemDetailList(_azureApiSettings.BaseUrl, response.Data.WorkItems.Skip(controlledWorkItemCount).Take(200).Select(x => x.Id).ToList());
                     var workItemDetailResponse = await _restService.GetApiResponseAsync<WorkItemDetailResponseModel>("GetWorkItemDetail", detailUrl, HelperMethods.GetAuthorizationHeaderCollection(_azureApiSettings.Username, _azureApiSettings.Password));
 
-                    responseModel.Users.AddRange(workItemMethods.GetWorkItems(workItemDetailResponse).Users);
+                    workItemMethods.GetWorkItems(workItemDetailResponse, responseModel);
 
-                    workItemListCount -= 200;
-                    controlledWorkItemCount += 200;
+                    workItemListCount -= (int) ApiEnums.RowLimit;
+                    controlledWorkItemCount += (int) ApiEnums.RowLimit;
                 }
                 responseModel.Count = responseModel.Users.Count();
+                if (request.IsEnabledLowEffortMonitoring)
+                {
+                    workItemMethods.MarkLowEffortUsers(responseModel.Users, request.WeeklyMaxEffort);
+                }
                 return Ok(responseModel);
             }
             return NotFound(response);
