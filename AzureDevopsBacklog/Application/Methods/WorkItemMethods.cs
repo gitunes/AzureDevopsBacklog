@@ -111,19 +111,19 @@ namespace AzureDevopsBacklog.Application.Methods
             {
                 switch (size)
                 {
-                    case "XX-Small":
+                    case TShirtSizes.XXSmall:
                         effort += 0.2;
                         break;
-                    case "X-Small":
+                    case TShirtSizes.XSmall:
                         effort += 0.5;
                         break;
-                    case "Small":
+                    case TShirtSizes.Small:
                         effort += 1;
                         break;
-                    case "Medium":
+                    case TShirtSizes.Medium:
                         effort += 2.5;
                         break;
-                    case "Large":
+                    case TShirtSizes.Large:
                         effort += 4;
                         break;
                     default:
