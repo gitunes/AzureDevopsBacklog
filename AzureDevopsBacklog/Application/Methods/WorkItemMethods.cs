@@ -17,7 +17,7 @@ namespace AzureDevopsBacklog.Application.Methods
             {
                 userSprintDetail.Holds.Add(workItemDetail);
             }
-            else if(workItemDetail.State == WorkItemStates.Cancelled)
+            else if (workItemDetail.State == WorkItemStates.Cancelled)
             {
                 userSprintDetail.Cancelled.Add(workItemDetail);
             }
@@ -31,39 +31,44 @@ namespace AzureDevopsBacklog.Application.Methods
             }
         }
 
-        public SprintDetailResponseModel GetWorkItems(BaseResponseModel<WorkItemDetailResponseModel> workItemDetailResponse)
+        public SprintDetailResponseModel GetWorkItems(BaseResponseModel<WorkItemDetailResponseModel> workItemDetailResponse, SprintDetailResponseModel responseModel)
         {
             var list = workItemDetailResponse?.Data?.WorkItemDetails.GroupBy(x => x.Fields.AssignedTo.UniqueName).Select(x => x.ToList()).ToList();
-            var responseModel = new SprintDetailResponseModel() { Count = list.Count() };
             list.ForEach(userList =>
             {
                 userList.ForEach(workItem =>
                 {
-                    SprintWorkItemDetail workItemDetail = new()
+                    if (workItem.Fields.AssignedTo?.UniqueName != null)
                     {
-                        State = workItem.Fields.State,
-                        IsHold = workItem.Fields.IsHold,
-                        Tag = workItem.Fields.Tags,
-                        Title = workItem.Fields.Title,
-                        TShirtSize = workItem.Fields.TShirtSize
-                    };
-                    var user = responseModel.Users.Find(x => x.User.UniqueName == workItem.Fields.AssignedTo.UniqueName);
-                    if (user == null)
-                    {
-                        UserSprintDetail userSprintDetail = new()
+                        SprintWorkItemDetail workItemDetail = new()
                         {
-                            User = new() { Id = workItem.Fields.AssignedTo.Id, DisplayName = workItem.Fields.AssignedTo.DisplayName, UniqueName = workItem.Fields.AssignedTo.UniqueName },
-                            WorkItemCount = userList.Count()
+                            State = workItem.Fields.State,
+                            IsHold = workItem.Fields.IsHold,
+                            Tag = workItem.Fields.Tags,
+                            Title = workItem.Fields.Title,
+                            TShirtSize = workItem.Fields.TShirtSize
                         };
 
-                        CheckWorkItemStatus(userSprintDetail, workItemDetail);
-                        responseModel.Users.Add(userSprintDetail);
-                    }
-                    else
-                    {
-                        CheckWorkItemStatus(user, workItemDetail);
-                    }
+                        var user = responseModel.Users.FirstOrDefault(x => x.User.UniqueName == workItem.Fields.AssignedTo.UniqueName);
+                        if (user == null)
+                        {
+                            UserSprintDetail userSprintDetail = new()
+                            {
+                                User = new() { Id = workItem.Fields.AssignedTo.Id, DisplayName = workItem.Fields.AssignedTo.DisplayName, UniqueName = workItem.Fields.AssignedTo.UniqueName },
+                                WorkItemCount = userList.Count()
+                            };
 
+                            CheckWorkItemStatus(userSprintDetail, workItemDetail);
+                            responseModel.Users.Add(userSprintDetail);
+
+                        }
+                        else
+                        {
+                            CheckWorkItemStatus(user, workItemDetail);
+                            var index = responseModel.Users.FindIndex(x => x.User.Id == user.User.Id);
+                            responseModel.Users[index] = user;
+                        }
+                    }
                 });
             }
             );
@@ -79,7 +84,7 @@ namespace AzureDevopsBacklog.Application.Methods
                 case WorkItemStates.Committed:
                     return false;
                 case WorkItemStates.Development:
-                    return true;
+                    return false;
                 case WorkItemStates.Test:
                     return true;
                 case WorkItemStates.Uat:
@@ -97,6 +102,59 @@ namespace AzureDevopsBacklog.Application.Methods
                 default:
                     return false;
             }
+        }
+
+        public double GetTotalEffort(List<string> sizes)
+        {
+            double effort = 0;
+            sizes.ForEach(size =>
+            {
+                switch (size)
+                {
+                    case "XX-Small":
+                        effort += 0.2;
+                        break;
+                    case "X-Small":
+                        effort += 0.5;
+                        break;
+                    case "Small":
+                        effort += 1;
+                        break;
+                    case "Medium":
+                        effort += 2.5;
+                        break;
+                    case "Large":
+                        effort += 4;
+                        break;
+                    default:
+                        break;
+                }
+            });
+            return effort;
+        }
+
+        public List<UserModel> GetLowEffortUsers(List<UserSprintDetail> users, double weeklyMaxEffort)
+        {
+            return users.Where(user =>
+            {
+                var size = GetTotalEffort(user.Finished.Select(x => x.TShirtSize).ToList());
+                return size < weeklyMaxEffort;
+            }).Select(item => new UserModel
+            {
+                Id = item.User.Id,
+                DisplayName = item.User.DisplayName,
+                UniqueName = item.User.UniqueName
+            }).ToList();
+        }
+
+        public void MarkLowEffortUsers(List<UserSprintDetail> users, double weeklyMaxEffort)
+        {
+            users.ForEach(user =>
+            {
+                var size = GetTotalEffort(user.Finished.Select(x => x.TShirtSize).ToList());
+                if (size < weeklyMaxEffort)
+                    user.IsLowEffort = true;
+            });
         }
     }
 }

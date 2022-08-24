@@ -3,6 +3,7 @@
     public class UserSprintDetail
     {
         public int WorkItemCount { get; set; }
+        public bool IsLowEffort { get; set; }
         public UserModel User { get; set; } = new();
         public List<SprintWorkItemDetail> Finished { get; set; } = new();
         public List<SprintWorkItemDetail> NotFinished { get; set; } = new();
