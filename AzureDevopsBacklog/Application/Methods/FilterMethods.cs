@@ -34,5 +34,15 @@ namespace AzureDevopsBacklog.Application.Methods
             }
             return Queries.GetWorkItemFilteredQuery(query);
         }
+
+        public static string GetSprintWorkItemsQuery(GetSprintDetailByTagRequestModel model)
+        {
+            if (!string.IsNullOrEmpty(model.Tag))
+            {
+                var query = $"[System.Tags] Contains '{model.Tag}'";
+                return Queries.GetWorkItemFilteredQuery(query);
+            }
+            return string.Empty;
+        }
     }
 }

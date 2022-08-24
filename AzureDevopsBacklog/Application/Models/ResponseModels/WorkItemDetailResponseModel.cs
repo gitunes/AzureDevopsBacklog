@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace AzureDevopsBacklog.Application.Models
+namespace AzureDevopsBacklog.Application.Models.ResponseModels
 {
     public class WorkItemDetailResponseModel
     {
