@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace AzureDevopsBacklog.Application.Models
 {
     public class ColumnModel
     {
-        [JsonProperty("referenceName")]
+        [JsonPropertyName("referenceName")]
         public string ReferenceName { get; set; }
 
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [JsonProperty("url")]
+        [JsonPropertyName("url")]
         public string Url { get; set; }
     }
 }

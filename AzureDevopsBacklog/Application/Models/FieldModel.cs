@@ -1,100 +1,100 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace AzureDevopsBacklog.Application.Models
 {
     public class FieldModel
     {
-        [JsonProperty("System.AssignedTo")]
+        [JsonPropertyName("System.AssignedTo")]
         public UserModel AssignedTo { get; set; } = new();
 
-        [JsonProperty("System.CreatedBy")]
+        [JsonPropertyName("System.CreatedBy")]
         public UserModel CreatedBy { get; set; } = new();
 
-        [JsonProperty("Microsoft.VSTS.Common.Priority")]
+        [JsonPropertyName("Microsoft.VSTS.Common.Priority")]
         public int Priority { get; set; }
 
-        [JsonProperty("Custom.DominoId")]
+        [JsonPropertyName("Custom.DominoId")]
         public int DominoId { get; set; }
 
-        [JsonProperty("System.CommentCount")]
+        [JsonPropertyName("System.CommentCount")]
         public int CommentCount { get; set; }
 
-        [JsonProperty("Custom.TShirtSize")]
+        [JsonPropertyName("Custom.TShirtSize")]
         public string TShirtSize { get; set; }
 
-        [JsonProperty("System.Tags")]
+        [JsonPropertyName("System.Tags")]
         public string Tags { get; set; }
 
-        [JsonProperty("System.State")]
+        [JsonPropertyName("System.State")]
         public string State { get; set; }
 
-        [JsonProperty("System.Title")]
+        [JsonPropertyName("System.Title")]
         public string Title { get; set; }
 
-        [JsonProperty("System.WorkItemType")]
+        [JsonPropertyName("System.WorkItemType")]
         public string WorkItemType { get; set; }
 
-        [JsonProperty("System.Description")]
+        [JsonPropertyName("System.Description")]
         public string Description { get; set; }
 
-        [JsonProperty("Microsoft.VSTS.Common.AcceptanceCriteria")]
+        [JsonPropertyName("Microsoft.VSTS.Common.AcceptanceCriteria")]
         public string AcceptanceCriteria { get; set; }
 
-        [JsonProperty("System.AreaPath")]
+        [JsonPropertyName("System.AreaPath")]
         public string AreaPath { get; set; }
 
-        [JsonProperty("System.TeamProject")]
+        [JsonPropertyName("System.TeamProject")]
         public string TeamProject { get; set; }
 
-        [JsonProperty("System.IterationPath")]
+        [JsonPropertyName("System.IterationPath")]
         public string IterationPath { get; set; }
 
-        [JsonProperty("System.Reason")]
+        [JsonPropertyName("System.Reason")]
         public string Reason { get; set; }
 
-        [JsonProperty("System.BoardLan")]
+        [JsonPropertyName("System.BoardLan")]
         public string BoardLane { get; set; }
 
-        [JsonProperty("System.BoardColumn")]
+        [JsonPropertyName("System.BoardColumn")]
         public string BoardColumn { get; set; }
 
-        [JsonProperty("System.BoardColumnDone")]
+        [JsonPropertyName("System.BoardColumnDone")]
         public bool BoardColumnDone { get; set; }
 
-        [JsonProperty("Custom.IsHold")]
+        [JsonPropertyName("Custom.IsHold")]
         public bool IsHold { get; set; }
 
-        [JsonProperty("Microsoft.VSTS.Common.StateChangeDate")]
+        [JsonPropertyName("Microsoft.VSTS.Common.StateChangeDate")]
         public string StateChangeDate { get; set; }
 
-        [JsonProperty("Microsoft.VSTS.Common.ActivatedDate")]
+        [JsonPropertyName("Microsoft.VSTS.Common.ActivatedDate")]
         public string ActivatedDate { get; set; }
 
-        [JsonProperty("Microsoft.VSTS.Common.ResolvedDate")]
+        [JsonPropertyName("Microsoft.VSTS.Common.ResolvedDate")]
         public string ResolvedDate { get; set; }
 
-        [JsonProperty("Microsoft.VSTS.Scheduling.TargetDate")]
+        [JsonPropertyName("Microsoft.VSTS.Scheduling.TargetDate")]
         public string TargetDate { get; set; }
 
-        [JsonProperty("Custom.ReadyDate")]
+        [JsonPropertyName("Custom.ReadyDate")]
         public string ReadyDate { get; set; }
 
-        [JsonProperty("Custom.DevelopmentDate")]
+        [JsonPropertyName("Custom.DevelopmentDate")]
         public string DevelopmentDate { get; set; }
 
-        [JsonProperty("Custom.DevelopmentEndDate")]
+        [JsonPropertyName("Custom.DevelopmentEndDate")]
         public string DevelopmentEndDate { get; set; }
 
-        [JsonProperty("Custom.DevelopmentEndDate2")]
+        [JsonPropertyName("Custom.DevelopmentEndDate2")]
         public string DevelopmentEndDate2 { get; set; }
         
-        [JsonProperty("System.ChangedDate")]
+        [JsonPropertyName("System.ChangedDate")]
         public string ChangedDate { get; set; }
 
-        [JsonProperty("Custom.CreatedDate")]
+        [JsonPropertyName("Custom.CreatedDate")]
         public string CreatedDate { get; set; }
 
-        [JsonProperty("Custom.CreatedDate2")]
+        [JsonPropertyName("Custom.CreatedDate2")]
         public string CreatedDate2 { get; set; }
     }
 }
