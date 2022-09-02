@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace AzureDevopsBacklog.Application.Models
 {
     public class UserModel
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
 
-        [JsonProperty("displayName")]
+        [JsonPropertyName("displayName")]
         public string DisplayName { get; set; }
 
-        [JsonProperty("uniqueName")]
+        [JsonPropertyName("uniqueName")]
         public string UniqueName { get; set; }
     }
 }

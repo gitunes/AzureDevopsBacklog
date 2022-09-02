@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace AzureDevopsBacklog.Application.Models
 {
     public class WorkItemDetailModel : WorkItemModel
     {
-        [JsonProperty("rev")]
+        [JsonPropertyName("rev")]
         public int Rev { get; set; }
 
-        [JsonProperty("fields")]
+        [JsonPropertyName("fields")]
         public FieldModel Fields { get; set; } = new();
     }
 }

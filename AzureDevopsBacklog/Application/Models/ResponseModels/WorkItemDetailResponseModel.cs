@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace AzureDevopsBacklog.Application.Models.ResponseModels
 {
     public class WorkItemDetailResponseModel
     {
-        [JsonProperty("count")]
+        [JsonPropertyName("count")]
         public int Count { get; set; }
 
-        [JsonProperty("value")]
+        [JsonPropertyName("value")]
         public List<WorkItemDetailModel> WorkItemDetails { get; set; } = new();
     }
 }

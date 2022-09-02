@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using AzureDevopsBacklog.Application.Models.ResponseModels;
 using AzureDevopsBacklog.Contants;
 using System.Collections.Specialized;
@@ -39,7 +39,7 @@ namespace AzureDevopsBacklog.Infrastructure.Services
             }
 
             var content = await httpResponseMessage.Content.ReadAsStringAsync();
-            var data = JsonConvert.DeserializeObject<TModel>(content);
+            var data = JsonSerializer.Deserialize<TModel>(content);
             return FillResponseModel<TModel>(response, data);
         }
 
@@ -67,7 +67,7 @@ namespace AzureDevopsBacklog.Infrastructure.Services
             }
 
             var content = await httpResponseMessage.Content.ReadAsStringAsync();
-            var data = JsonConvert.DeserializeObject<TModel>(content);
+            var data = JsonSerializer.Deserialize<TModel>(content);
             return FillResponseModel<TModel>(response, data);
         }
 

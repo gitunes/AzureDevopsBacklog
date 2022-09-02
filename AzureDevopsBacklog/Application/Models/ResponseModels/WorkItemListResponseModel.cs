@@ -1,22 +1,22 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace AzureDevopsBacklog.Application.Models.ResponseModels
 {
     public class WorkItemListResponseModel
     {
-        [JsonProperty("queryType")]
+        [JsonPropertyName("queryType")]
         public string QueryType { get; set; }
 
-        [JsonProperty("queryResultType")]
+        [JsonPropertyName("queryResultType")]
         public string QueryResultType { get; set; }
 
-        [JsonProperty("asOf")]
+        [JsonPropertyName("asOf")]
         public string QueryCallDate { get; set; }
 
-        //[JsonProperty("columns")]
+        //[JsonPropertyName("columns")]
         //public List<ColumnModel> Columns { get; set; } = new();
 
-        [JsonProperty("workItems")]
+        [JsonPropertyName("workItems")]
         public List<WorkItemModel> WorkItems { get; set; } = new();
     }
 }
