@@ -80,23 +80,15 @@ namespace AzureDevopsBacklog.Application.Methods
             switch (state)
             {
                 case WorkItemStates.New:
-                    return false;
                 case WorkItemStates.Committed:
-                    return false;
                 case WorkItemStates.Development:
-                    return false;
-                case WorkItemStates.Test:
-                    return true;
-                case WorkItemStates.Uat:
-                    return true;
-                case WorkItemStates.ReadyForDeployment:
-                    return true;
-                case WorkItemStates.Deployment:
-                    return true;
-                case WorkItemStates.Closed:
-                    return true;
                 case WorkItemStates.Cancelled:
                     return false;
+                case WorkItemStates.Test:
+                case WorkItemStates.Uat:
+                case WorkItemStates.ReadyForDeployment:
+                case WorkItemStates.Deployment:
+                case WorkItemStates.Closed:
                 case WorkItemStates.Archive:
                     return true;
                 default:

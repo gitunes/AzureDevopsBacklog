@@ -11,8 +11,9 @@ namespace AzureDevopsBacklog.Extensions
         public static void RegisterServices(this IServiceCollection services)
         {
             services.AddHttpClient();
-            services.AddSingleton<IRestService, RestService>();
             services.RegisterAzureApiSettings();
+            services.AddSingleton<IRestService, RestService>();
+            services.AddSingleton<IWorkItemService, WorkItemService>();
         }
 
         public static void RegisterAzureApiSettings(this IServiceCollection services)
