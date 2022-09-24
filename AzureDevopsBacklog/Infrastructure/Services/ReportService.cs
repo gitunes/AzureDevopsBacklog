@@ -42,21 +42,26 @@ namespace AzureDevopsBacklog.Infrastructure.Services
 
         public void SendSprintReport(List<UserSprintDetail> users, string sprintTag, double effort)
         {
-            var bodyForManagers = new StringBuilder();
-            bodyForManagers.AppendLine(ReportMessages.ReportDescription(effort));
-            users.Where(user => user.IsLowEffort && user.NotFinished.Any()).ToList().ForEach(workItem =>
+            var reportedUsers = users.Where(user => user.IsLowEffort && user.NotFinished.Any()).ToList();
+            if (reportedUsers.Any())
             {
-                bodyForManagers.AppendLine(ReportMessages.UserInfo(workItem.User.UniqueName, workItem.NotFinished.Count()));
-                var bodyForDevs = new StringBuilder();
-                bodyForDevs.AppendLine(ReportMessages.InCompleteWorkItemMessage);
-                workItem.NotFinished.ForEach(item =>
+                var bodyForManagers = new StringBuilder();
+                bodyForManagers.AppendLine(ReportMessages.ReportDescription(users.Count(), reportedUsers.Count(), effort));
+                reportedUsers.ForEach(workItem =>
                 {
-                    bodyForDevs.AppendLine(ReportMessages.InCompleteWorkItemMessageTemplate(_azureApiSettings.BaseUrl, item.Title, item.Id));
-                    bodyForManagers.AppendLine(ReportMessages.InCompleteWorkItemMessageTemplate(_azureApiSettings.BaseUrl, item.Title, item.Id));
+                    bodyForManagers.AppendLine(ReportMessages.UserInfo(workItem.User.UniqueName, workItem.NotFinished.Count()));
+                    var bodyForDevs = new StringBuilder();
+                    bodyForDevs.AppendLine(ReportMessages.InCompleteWorkItemMessage);
+                    workItem.NotFinished.ForEach(item =>
+                    {
+                        bodyForDevs.AppendLine(ReportMessages.InCompleteWorkItemMessageTemplate(_azureApiSettings.BaseUrl, item.Title, item.Id));
+                        bodyForManagers.AppendLine(ReportMessages.InCompleteWorkItemMessageTemplate(_azureApiSettings.BaseUrl, item.Title, item.Id));
+                    });
+                    SendNotification(new() { Body = bodyForDevs.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = new() { workItem.User.UniqueName } });
                 });
-                SendNotification(new() { Body = bodyForDevs.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = new() { workItem.User.UniqueName } });
-            });
-            SendNotification(new() { Body = bodyForManagers.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = UserInformations.Managers });
+                SendNotification(new() { Body = bodyForManagers.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = UserInformations.Managers });
+            }
+
         }
     }
 }
