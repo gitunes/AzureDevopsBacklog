@@ -2,6 +2,7 @@
 {
     public class SprintWorkItemDetail
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Tag { get; set; }
         public string State { get; set; }

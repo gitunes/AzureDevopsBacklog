@@ -8,41 +8,55 @@ namespace AzureDevopsBacklog.Application.Methods
     {
         public static string GetFilteredQuery(GetWorkItemDetailByFilterRequestModel model)
         {
-            var query = string.Empty;
+            List<string> filters = new List<string>();
             if (model.CreateDate.MinDate.HasValue)
             {
-                query = string.Concat(query, $"[System.CreatedDate] >= '{model.CreateDate.MinDate.Value.ToString(DateFormats.YearMonthDayWithHyphen)}' ");
+                filters.Add(BiggerOrEqual(WorkItemAttributes.CreatedDate, model.CreateDate.MinDate.Value.ToString(DateFormats.YearMonthDayWithHyphen)));
             }
             if (model.CreateDate.MaxDate.HasValue)
             {
-                query = string.Concat(string.IsNullOrEmpty(query) ? query : $"{query} AND ", $"[System.CreatedDate] <= '{model.CreateDate.MaxDate.Value.ToString(DateFormats.YearMonthDayWithHyphen)}' ");
+                filters.Add(FilterMethods.SmallerOrEqual(WorkItemAttributes.CreatedDate, model.CreateDate.MaxDate.Value.ToString(DateFormats.YearMonthDayWithHyphen)));
             }
             if (!model.Tags.IsNullOrNotAny())
             {
                 model.Tags.ForEach(tag =>
                 {
-                    query = string.Concat(string.IsNullOrEmpty(query) ? query : $"{query} AND ", $"[System.Tags] Contains '{tag}' ");
+                    filters.Add(Contains(WorkItemAttributes.Tags, tag));
                 });
             }
             if (!string.IsNullOrEmpty(model.State))
             {
-                query = string.Concat(string.IsNullOrEmpty(query) ? query : $"{query} AND ", $"[System.State] = '{model.State}' ");
+                filters.Add(Equals(WorkItemAttributes.State, model.State));
             }
             if (model.IsHold ?? false)
             {
-                query = string.Concat(string.IsNullOrEmpty(query) ? query : $"{query} AND ", $"[Custom.IsHold] = true ");
+                filters.Add(Equals(WorkItemAttributes.IsHold, model.IsHold));
             }
-            return Queries.GetWorkItemFilteredQuery(query);
+            return GetWorkItemFilteredQuery(filters);
+        }
+
+        public static string GetWorkItemFilteredQuery(List<string> filters)
+        {
+            var query = Queries.GetWorkItemFilteredQuery(string.Join(" AND ", filters));
+            return query;
         }
 
         public static string GetSprintWorkItemsQuery(GetSprintDetailByTagRequestModel model)
         {
             if (!string.IsNullOrEmpty(model.Tag))
             {
-                var query = $"[System.Tags] Contains '{model.Tag}'";
+                var query = $"[Tags] Contains '{model.Tag}'";
                 return Queries.GetWorkItemFilteredQuery(query);
             }
             return string.Empty;
         }
+
+        public static string Contains(string type, string value) => $" [{type}] Contains '{value}' ";
+
+        public static string Equals<T>(string type, T value) => $" [{type}] = '{value}' ";
+
+        public static string BiggerOrEqual<T>(string type, T value) => $" [{type}] >= '{value}' ";
+
+        public static string SmallerOrEqual<T>(string type, T value) => $" [{type}] <= '{value}' ";
     }
 }
