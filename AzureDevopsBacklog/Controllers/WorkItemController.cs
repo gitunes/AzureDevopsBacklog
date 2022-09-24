@@ -23,9 +23,8 @@ namespace AzureDevopsBacklog.Controllers
         public async Task<IActionResult> GetWorkItemDetail(int id)
         {
             var response = await _workItemService.GetWorkItemDetail(id);
-            if (response.IsSucceeded)
-                return Ok(response);
-            return NotFound(response);
+            return Ok(response);
+
         }
 
         [HttpPost]
@@ -33,9 +32,8 @@ namespace AzureDevopsBacklog.Controllers
         public async Task<IActionResult> GetWorkItemsByQuery(GetWorkItemDetailRequestModel request)
         {
             var response = await _workItemService.GetWorkItemsByQuery(request);
-            if (response.IsSucceeded)
-                return Ok(response);
-            return NotFound(response);
+            return Ok(response);
+
         }
 
         [HttpPost]
@@ -43,9 +41,7 @@ namespace AzureDevopsBacklog.Controllers
         public async Task<IActionResult> GetWorkItemDetailsByFilter(GetWorkItemDetailByFilterRequestModel request)
         {
             var response = await _workItemService.GetWorkItemDetailsByFilter(request);
-            if (response.IsSucceeded)
-                return Ok(response);
-            return NotFound(response);
+            return Ok(response);
         }
     }
 }

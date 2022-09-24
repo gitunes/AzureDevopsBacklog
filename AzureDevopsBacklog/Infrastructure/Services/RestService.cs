@@ -30,17 +30,15 @@ namespace AzureDevopsBacklog.Infrastructure.Services
                 }
             }
 
-            var response = new BaseResponseModel<TModel>();
             HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(routeUrl);
             if (!httpResponseMessage.IsSuccessStatusCode)
             {
-                response.ResponseMessage = ExceptionMessages.RequestFailed;
-                return response;
+                return new BaseResponseModel<TModel>() { IsSucceeded = false, ResponseMessage = ExceptionMessages.RequestFailed };
             }
 
             var content = await httpResponseMessage.Content.ReadAsStringAsync();
             var data = JsonSerializer.Deserialize<TModel>(content);
-            return FillResponseModel<TModel>(response, data);
+            return new BaseResponseModel<TModel>() { Data = data, IsSucceeded = true, ResponseMessage = SuccessMessages.RequestSuccessful };
         }
 
         public async Task<BaseResponseModel<TModel>> PostApiResponseAsync<TModel>(string clientName, string routeUrl, object requestModel, NameValueCollection? headersCollection = null) where TModel : class, new()
@@ -58,31 +56,21 @@ namespace AzureDevopsBacklog.Infrastructure.Services
                 }
             }
 
-            var response = new BaseResponseModel<TModel>();
             HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync(routeUrl, requestModel);
             if (!httpResponseMessage.IsSuccessStatusCode)
             {
-                response.ResponseMessage = ExceptionMessages.RequestFailed;
-                return response;
+                return new BaseResponseModel<TModel>() { IsSucceeded = false, ResponseMessage = ExceptionMessages.RequestFailed };
             }
 
             var content = await httpResponseMessage.Content.ReadAsStringAsync();
             var data = JsonSerializer.Deserialize<TModel>(content);
-            return FillResponseModel<TModel>(response, data);
+            return new BaseResponseModel<TModel>() { Data = data, IsSucceeded = true, ResponseMessage = SuccessMessages.RequestSuccessful };
         }
 
         private static void ValidateClientName(string clientName)
         {
             if (string.IsNullOrWhiteSpace(clientName))
                 throw new ArgumentNullException(nameof(clientName), ExceptionMessages.ClientNameRequired);
-        }
-
-        private static BaseResponseModel<TModel> FillResponseModel<TModel>(BaseResponseModel<TModel> response, TModel data)
-        {
-            response.Data = data;
-            response.IsSucceeded = true;
-            response.ResponseMessage = SuccessMessages.RequestSuccessful;
-            return response;
         }
     }
 }

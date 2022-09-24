@@ -1,11 +1,68 @@
 ﻿using AzureDevopsBacklog.Application.Models;
 using AzureDevopsBacklog.Application.Models.ResponseModels;
 using AzureDevopsBacklog.Contants;
+using AzureDevopsBacklog.Infrastructure.Interfaces;
 
 namespace AzureDevopsBacklog.Application.Methods
 {
     public class WorkItemMethods
     {
+
+        public SprintDetailResponseModel GetWorkItems(BaseResponseModel<WorkItemDetailResponseModel> workItemDetailResponse, SprintDetailResponseModel responseModel)
+        {
+            var list = workItemDetailResponse?.Data?.WorkItemDetails.Where(x => !string.IsNullOrEmpty(x.Fields.AssignedTo.Id)).GroupBy(x => x.Fields.AssignedTo.UniqueName).Select(x => x.ToList()).ToList();
+            list?.ForEach(userList =>
+            {
+                userList.ForEach(workItem =>
+                {
+                    SprintWorkItemDetail workItemDetail = new()
+                    {
+                        Id = workItem.Id,
+                        State = workItem.Fields.State,
+                        IsHold = workItem.Fields.IsHold,
+                        Tag = workItem.Fields.Tags,
+                        Title = workItem.Fields.Title,
+                        TShirtSize = workItem.Fields.TShirtSize
+                    };
+
+                    var user = responseModel.Users.FirstOrDefault(x => x.User.UniqueName == workItem.Fields.AssignedTo.UniqueName);
+                    if (user == null)
+                    {
+                        UserSprintDetail userSprintDetail = new()
+                        {
+                            User = new()
+                            {
+                                Id = workItem.Fields.AssignedTo.Id,
+                                DisplayName = workItem.Fields.AssignedTo.DisplayName,
+                                UniqueName = workItem.Fields.AssignedTo.UniqueName
+                            },
+                            WorkItemCount = 1,
+                        };
+
+                        CheckWorkItemStatus(userSprintDetail, workItemDetail);
+                        responseModel.Users.Add(userSprintDetail);
+
+                    }
+                    else
+                    {
+                        CheckWorkItemStatus(user, workItemDetail);
+                        var userRecord = responseModel.Users.Find(x => x.User.Id == user.User.Id);
+                        userRecord = user;
+                        userRecord.WorkItemCount++;
+                    }
+                });
+            }
+            );
+            return responseModel;
+        }
+
+        public async Task<BaseResponseModel<WorkItemDetailResponseModel>> GetWorkItemDetailsAsync(IAzureApiSettings azureApiSettings, IRestService restService,
+            List<WorkItemModel> list, int skipCount)
+        {
+            var detailUrl = RemoteUrls.GetWorkItemDetailList(azureApiSettings.BaseUrl, list.Skip(skipCount).Take(200).Select(x => x.Id).ToList());
+            var workItemDetailResponse = await restService.GetApiResponseAsync<WorkItemDetailResponseModel>("GetWorkItemDetail", detailUrl, HelperMethods.GetAuthorizationHeaderCollection(azureApiSettings.Username, azureApiSettings.Password));
+            return workItemDetailResponse;
+        }
         public void CheckWorkItemStatus(UserSprintDetail userSprintDetail, SprintWorkItemDetail workItemDetail)
         {
             var tags = workItemDetail.Tag.Split(";");
@@ -29,50 +86,6 @@ namespace AzureDevopsBacklog.Application.Methods
             {
                 userSprintDetail.Finished.Add(workItemDetail);
             }
-        }
-
-        public SprintDetailResponseModel GetWorkItems(BaseResponseModel<WorkItemDetailResponseModel> workItemDetailResponse, SprintDetailResponseModel responseModel)
-        {
-            var list = workItemDetailResponse?.Data?.WorkItemDetails.GroupBy(x => x.Fields.AssignedTo.UniqueName).Select(x => x.ToList()).ToList();
-            list.ForEach(userList =>
-            {
-                userList.ForEach(workItem =>
-                {
-                    if (workItem.Fields.AssignedTo?.UniqueName != null)
-                    {
-                        SprintWorkItemDetail workItemDetail = new()
-                        {
-                            State = workItem.Fields.State,
-                            IsHold = workItem.Fields.IsHold,
-                            Tag = workItem.Fields.Tags,
-                            Title = workItem.Fields.Title,
-                            TShirtSize = workItem.Fields.TShirtSize
-                        };
-
-                        var user = responseModel.Users.FirstOrDefault(x => x.User.UniqueName == workItem.Fields.AssignedTo.UniqueName);
-                        if (user == null)
-                        {
-                            UserSprintDetail userSprintDetail = new()
-                            {
-                                User = new() { Id = workItem.Fields.AssignedTo.Id, DisplayName = workItem.Fields.AssignedTo.DisplayName, UniqueName = workItem.Fields.AssignedTo.UniqueName },
-                                WorkItemCount = userList.Count()
-                            };
-
-                            CheckWorkItemStatus(userSprintDetail, workItemDetail);
-                            responseModel.Users.Add(userSprintDetail);
-
-                        }
-                        else
-                        {
-                            CheckWorkItemStatus(user, workItemDetail);
-                            var index = responseModel.Users.FindIndex(x => x.User.Id == user.User.Id);
-                            responseModel.Users[index] = user;
-                        }
-                    }
-                });
-            }
-            );
-            return responseModel;
         }
 
         public bool IsWorkItemDone(string state)
@@ -116,7 +129,7 @@ namespace AzureDevopsBacklog.Application.Methods
                         effort += 2.5;
                         break;
                     case TShirtSizes.Large:
-                        effort += 4;
+                        effort += 4.5;
                         break;
                     default:
                         break;
@@ -125,27 +138,16 @@ namespace AzureDevopsBacklog.Application.Methods
             return effort;
         }
 
-        public List<UserModel> GetLowEffortUsers(List<UserSprintDetail> users, double weeklyMaxEffort)
+        public void MarkLowEffortUsers(SprintDetailResponseModel model, double weeklyMaxEffort)
         {
-            return users.Where(user =>
-            {
-                var size = GetTotalEffort(user.Finished.Select(x => x.TShirtSize).ToList());
-                return size < weeklyMaxEffort;
-            }).Select(item => new UserModel
-            {
-                Id = item.User.Id,
-                DisplayName = item.User.DisplayName,
-                UniqueName = item.User.UniqueName
-            }).ToList();
-        }
-
-        public void MarkLowEffortUsers(List<UserSprintDetail> users, double weeklyMaxEffort)
-        {
-            users.ForEach(user =>
+            model.Users.ForEach(user =>
             {
                 var size = GetTotalEffort(user.Finished.Select(x => x.TShirtSize).ToList());
                 if (size < weeklyMaxEffort)
+                {
                     user.IsLowEffort = true;
+                    model.LowEffortUsers.Add(user.User.UniqueName);
+                }
             });
         }
     }

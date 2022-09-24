@@ -12,8 +12,11 @@ namespace AzureDevopsBacklog.Extensions
         {
             services.AddHttpClient();
             services.RegisterAzureApiSettings();
+            services.RegisterSmtpClientSettings();
             services.AddSingleton<IRestService, RestService>();
             services.AddSingleton<IWorkItemService, WorkItemService>();
+            services.AddSingleton<ISprintService, SprintService>();
+            services.AddSingleton<IReportService, ReportService>();
         }
 
         public static void RegisterAzureApiSettings(this IServiceCollection services)
@@ -24,6 +27,15 @@ namespace AzureDevopsBacklog.Extensions
             IConfiguration configuration = serviceProvider.GetRequiredService<IConfiguration>();
             services.Configure<AzureApiSettings>(configuration.GetRequiredSection(nameof(AzureApiSettings)));
             services.TryAddSingleton<IAzureApiSettings>(provider => provider.GetRequiredService<IOptions<AzureApiSettings>>().Value);
+        }
+        public static void RegisterSmtpClientSettings(this IServiceCollection services)
+        {
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
+            ArgumentNullException.ThrowIfNull(serviceProvider, nameof(serviceProvider));
+
+            IConfiguration configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            services.Configure<SmtpClientSettings>(configuration.GetRequiredSection(nameof(SmtpClientSettings)));
+            services.TryAddSingleton<ISmtpClientSettings>(provider => provider.GetRequiredService<IOptions<SmtpClientSettings>>().Value);
         }
     }
 }
