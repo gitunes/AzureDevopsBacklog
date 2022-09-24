@@ -53,9 +53,9 @@ namespace AzureDevopsBacklog.Infrastructure.Services
                     bodyForDevs.AppendLine(ReportMessages.InCompleteWorkItemMessageTemplate(_azureApiSettings.BaseUrl, item.Title, item.Id));
                     bodyForManagers.AppendLine(ReportMessages.InCompleteWorkItemMessageTemplate(_azureApiSettings.BaseUrl, item.Title, item.Id));
                 });
-                //SendNotification(new() { Body = bodyForDevs.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = new() { "mert.savas@d-teknoloji.com.tr" } });
+                SendNotification(new() { Body = bodyForDevs.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = new() { workItem.User.UniqueName } });
             });
-            //SendNotification(new() { Body = bodyForManagers.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = UserInformations.Managers });
+            SendNotification(new() { Body = bodyForManagers.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = UserInformations.Managers });
         }
     }
 }
