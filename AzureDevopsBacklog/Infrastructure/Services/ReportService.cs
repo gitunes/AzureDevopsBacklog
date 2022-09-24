@@ -25,6 +25,7 @@ namespace AzureDevopsBacklog.Infrastructure.Services
             model.ToEmails.ForEach(email => message.To.Add(new(email)));
             message.Subject = model.Subject;
             message.Body = model.Body;
+            message.IsBodyHtml = true;
             using SmtpClient client = new SmtpClient(_smtpClientSettings.Host, _smtpClientSettings.Port);
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential(_smtpClientSettings.UserName, _smtpClientSettings.Password);
