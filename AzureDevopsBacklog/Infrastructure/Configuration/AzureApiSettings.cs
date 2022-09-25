@@ -2,7 +2,7 @@
 
 namespace AzureDevopsBacklog.Infrastructure.Configuration
 {
-    public sealed record class AzureApiSettings : IAzureApiSettings
+    public sealed record AzureApiSettings : IAzureApiSettings
     {
         public string BaseUrl { get; init; }
         public string Username { get; init; }
