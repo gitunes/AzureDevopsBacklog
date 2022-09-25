@@ -11,6 +11,7 @@ namespace AzureDevopsBacklog.Application.Methods
         public SprintDetailResponseModel GetWorkItems(BaseResponseModel<WorkItemDetailResponseModel> workItemDetailResponse, SprintDetailResponseModel responseModel)
         {
             var list = workItemDetailResponse?.Data?.WorkItemDetails.Where(x => !string.IsNullOrEmpty(x.Fields.AssignedTo.Id)).GroupBy(x => x.Fields.AssignedTo.UniqueName).Select(x => x.ToList()).ToList();
+            var x = list.Count();
             list?.ForEach(userList =>
             {
                 userList.ForEach(workItem =>
@@ -22,7 +23,8 @@ namespace AzureDevopsBacklog.Application.Methods
                         IsHold = workItem.Fields.IsHold,
                         Tag = workItem.Fields.Tags,
                         Title = workItem.Fields.Title,
-                        TShirtSize = workItem.Fields.TShirtSize
+                        TShirtSize = workItem.Fields.TShirtSize,
+                        CreatedBy = workItem.Fields.CreatedBy.DisplayName
                     };
 
                     var user = responseModel.Users.FirstOrDefault(x => x.User.UniqueName == workItem.Fields.AssignedTo.UniqueName);

@@ -54,14 +54,13 @@ namespace AzureDevopsBacklog.Infrastructure.Services
                     bodyForDevs.AppendLine(ReportMessages.InCompleteWorkItemMessage);
                     workItem.NotFinished.ForEach(item =>
                     {
-                        bodyForDevs.AppendLine(ReportMessages.InCompleteWorkItemMessageTemplate(_azureApiSettings.BaseUrl, item.Title, item.Id));
-                        bodyForManagers.AppendLine(ReportMessages.InCompleteWorkItemMessageTemplate(_azureApiSettings.BaseUrl, item.Title, item.Id));
+                        bodyForDevs.AppendLine(ReportMessages.InCompleteWorkItemMessageTemplate(_azureApiSettings.BaseUrl, item.Title, item.Id, item.CreatedBy));
+                        bodyForManagers.AppendLine(ReportMessages.InCompleteWorkItemMessageTemplate(_azureApiSettings.BaseUrl, item.Title, item.Id, item.CreatedBy));
                     });
-                    SendNotification(new() { Body = bodyForDevs.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = new() { workItem.User.UniqueName } });
+                    //SendNotification(new() { Body = bodyForDevs.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = new() { workItem.User.UniqueName } });
                 });
-                SendNotification(new() { Body = bodyForManagers.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = UserInformations.Managers });
+                //SendNotification(new() { Body = bodyForManagers.ToString(), Subject = ReportMessages.SprintReminding(sprintTag), ToEmails = UserInformations.Managers });
             }
-
         }
     }
 }
